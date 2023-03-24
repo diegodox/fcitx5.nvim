@@ -82,10 +82,14 @@ function M.setup()
 	if not M.is_ime_available then
 		return
 	end
+
+	local g = vim.api.nvim_create_augroup("Fcitx5", { clear = true })
+
 	vim.api.nvim_create_autocmd("WinLeave", {
 		callback = function(opts)
 			M.last_filetype = buf_filetype(opts.buf)
 		end,
+		group = g,
 		desc = "Keep last filetype for fcitx5",
 	})
 
@@ -96,6 +100,7 @@ function M.setup()
 				M.restore_ime_status()
 			end
 		end,
+		group = g,
 		desc = "Restore IME Mode when Enter Insert Mode",
 	})
 
@@ -104,6 +109,7 @@ function M.setup()
 			local is_disble_filetype = M.last_filetype ~= "TelescopePrompt"
 			M.ime_off(is_disble_filetype)
 		end,
+		group = g,
 		desc = "Store IME Mode and Turn off when Leave Insert",
 	})
 end
