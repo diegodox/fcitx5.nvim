@@ -46,8 +46,8 @@ function M.store_ime_status()
 	M.last_ime_status = M.is_ime_on()
 end
 
----call system function to make ime off
----if parameter `store` is true, remember ime status before this function called
+---call system function to make ime off.
+---if parameter `store` is true, remember ime status before make ime off.
 ---@param store boolean?
 ---@return boolean?  suc
 ---@return exitcode? exitcode
@@ -59,8 +59,8 @@ function M.ime_off(store)
 	return os.execute("fcitx5-remote -o > /dev/null 2>&1")
 end
 
----call system function to make ime on
----if parameter `store` is true, remember ime status before this function called
+---call system function to make ime on.
+---if parameter `store` is true, remember ime status before make ime on.
 ---@param store boolean?
 ---@return boolean?  suc
 ---@return exitcode? exitcode
