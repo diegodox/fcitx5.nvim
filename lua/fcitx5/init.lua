@@ -2,6 +2,12 @@ local M = {
 	is_ime_available = nil,
 	last_ime_status = nil,
 	last_filetype = nil,
+	
+	ime_on_status = 1,
+	ime_off_status = 2,
+
+	ime_on_arg = "-o",
+	ime_off_arg = "-c",
 }
 
 ---@param cmd string
@@ -32,10 +38,10 @@ function M.is_ime_on()
 		return nil
 	end
 	local status = os_capture("fcitx5-remote")
-	if status == "2" then
+	if status == M.ime_off_status then
 		return false
 	end
-	if status == "1" then
+	if status == M.ime_on_status then
 		return true
 	end
 	return nil
@@ -56,7 +62,7 @@ function M.ime_off(store)
 	if store then
 		M.store_ime_status()
 	end
-	return os.execute("fcitx5-remote -o > /dev/null 2>&1")
+	return os.execute("fcitx5-remote " .. M.ime_off_arg .. " > /dev/null 2>&1")
 end
 
 ---call system function to make ime on.
@@ -69,7 +75,7 @@ function M.ime_on(store)
 	if store then
 		M.store_ime_status()
 	end
-	return os.execute("fcitx5-remote -c > /dev/null 2>&1")
+	return os.execute("fcitx5-remote " .. M.ime_on_arg .. " > /dev/null 2>&1")
 end
 
 ---restore ime status (i.e. set to `last_ime_status`)
@@ -83,11 +89,16 @@ function M.restore_ime_status()
 	end
 end
 
-function M.setup()
+function M.setup(cfg)
 	M.is_ime_available = os.execute("which fcitx5-remote > /dev/null") == 0
 	if not M.is_ime_available then
 		return
 	end
+
+	M.ime_on_status = cfg.ime_on_status or M.ime_on_status
+	M.ime_off_status = cfg.ime_off_status or M.ime_off_status
+	M.ime_on_arg = cfg.ime_on_arg or M.ime_on_arg
+	M.ime_off_arg = cfg.ime_off_arg or M.ime_off_arg
 
 	local g = vim.api.nvim_create_augroup("Fcitx5", { clear = true })
 
